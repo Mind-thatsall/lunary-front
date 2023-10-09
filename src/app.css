@@ -1,0 +1,40 @@
+
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color: #ACB9C9;
+  background-color: #0D0E10;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+
+  --text-color-primary: #ACB9C9;
+  --text-color-70: #7E8792;
+  --text-color-50: #61666E;
+  --text-color-important: #F35C5C;
+  --background-secondary: #181B1E;
+}
+
+
+#app {
+  display: flex;
+}
+
+a {
+  text-decoration: none;
+}
+
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
