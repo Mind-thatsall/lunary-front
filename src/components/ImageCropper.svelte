@@ -99,9 +99,10 @@
 
     const canvas = document.createElement("canvas");
     const ctx = canvas.getContext("2d");
-    const imageBounds = imgElement.getBoundingClientRect();
     let { naturalWidth, naturalHeight } = imgElement;
+    const imageBounds = imgElement.getBoundingClientRect();
     const avatarBounds = avatar.getBoundingClientRect();
+    console.log(imgElement, avatar.getBoundingClientRect());
 
     const OUTPUT_WIDTH = avatarBounds.width;
     const OUTPUT_HEIGHT = avatarBounds.height;
@@ -144,7 +145,7 @@
             user_store.update((val) => {
               return { ...val, banner: objectURL };
             });
-          } else {
+          } else if (type === "avatar") {
             user_store.update((val) => {
               return { ...val, avatar: objectURL };
             });

@@ -7,7 +7,7 @@
   } from "../utils/stores";
 
   let isCurrentServer = false;
-  export let server_id, server_title, server_description;
+  export let server_id, server_title, server_description, server_logo;
 
   $: if ($curr_server_store) {
     isCurrentServer = $curr_server_store.server_id === server_id;
@@ -24,7 +24,7 @@
   } border-1 transition-colors px-4 py-3 rounded-xl`}
 >
   <img
-    src={server_icon_test}
+    src={server_logo === "" ? server_icon_test : server_logo}
     alt={server_title + "'s logo"}
     class={`h-16 w-16 mr-5 flex-shrink-0 object-cover transition-all ${
       isCurrentServer ? "rounded-lg" : "rounded-2xl"

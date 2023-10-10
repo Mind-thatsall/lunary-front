@@ -1,3 +1,9 @@
+<script>
+  import { curr_server_store } from "../utils/stores";
+
+  let server_banner = "/src/assets/server_icon_test.png";
+</script>
+
 <div class="pointer-events-none h-screen w-screen overflow-hidden absolute">
   <svg
     width="1262"
@@ -16,7 +22,9 @@
         patternContentUnits="objectBoundingBox"
       >
         <image
-          xlink:href="/src/assets/server_icon_test.png"
+          xlink:href={$curr_server_store.banner === ""
+            ? server_banner
+            : $curr_server_store.banner}
           x="0"
           y="0"
           width="1"

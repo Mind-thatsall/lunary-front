@@ -59,10 +59,12 @@
     placeholder="Search"
   />
   <img
-    src={server_image}
+    src={$curr_server_store.banner === ""
+      ? server_image
+      : $curr_server_store.banner}
     alt=""
     id="server_image"
-    class="w-full h-44 object-cover rounded-lg border-bulle-900/10"
+    class="box-border border-[4px] w-full h-44 object-cover rounded-lg border-bulle-900/10"
   />
   <div class="flex flex-col justify-between h-full">
     <section>
@@ -98,6 +100,6 @@
 
 <style>
   .width-bar {
-    width: max(289px, min(18vw, 350px));
+    width: 300px;
   }
 </style>

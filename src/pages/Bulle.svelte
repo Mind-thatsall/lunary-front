@@ -17,7 +17,6 @@
   let currentServer: string;
   let unsubscribe: Unsubscriber;
   let container: HTMLElement;
-  let newMessage = false;
 
   async function loadproto() {
     const root = await protobuf.load("/src/protobuf/user_message.proto");
@@ -42,6 +41,7 @@
         console.error(response.statusText);
       }
 
+      console.log(data);
       if (data !== null) {
         messages_store.set(data);
       } else {
@@ -58,11 +58,9 @@
       $socket.onmessage = (message) => {
         const data = new Uint8Array(message.data);
         const decodedMessage = Message.decode(data);
-
         console.log(decodedMessage);
 
         if (decodedMessage.channelid === currentChannel) {
-          newMessage = true;
           messages_store.update((messages) => [...messages, decodedMessage]);
         }
       };
@@ -71,16 +69,7 @@
 
   afterUpdate(() => {
     if ($messages_store) {
-      if (newMessage) {
-        console.log(newMessage);
-        container.scrollTo({
-          top: container.scrollHeight,
-          behavior: "smooth",
-        });
-        newMessage = false;
-      } else {
-        container.scrollTo(0, container.scrollHeight);
-      }
+      container.scrollTo(0, container.scrollHeight);
     }
   });
 
@@ -111,20 +100,19 @@
   });
 </script>
 
-<main class="relative flex-grow h-screen scrollbar-hide">
+<main
+  id="message_parent_container"
+  class="relative flex-grow h-screen scrollbar-hide"
+>
   <div class="flex-grow flex flex-col justify-end overflow-hidden h-full">
     <div
       bind:this={container}
       id="message_box"
-      class="overflow-y-auto py-14 scrollbar-hide"
+      class="overflow-y-scroll py-14 scrollbar-hide"
     >
       {#if $messages_store}
         {#each $messages_store as message}
-          <ChatElement
-            username={message.sender.username}
-            role="Admin"
-            message_content={message.content}
-          />
+          <ChatElement role="Admin" {message} />
         {/each}
       {:else}
         <p>No messages in this channel yet</p>

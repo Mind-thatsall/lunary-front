@@ -1,9 +1,10 @@
 import { user_store } from "./stores";
 
-async function generateURLToUploadFile(type, version) {
+async function generateURLToUploadFile(entityType, mediaType, version) {
+
   try {
     const response = await fetch(
-      `http://localhost:3000/api/new_signed_url_s3/bulles-bucket/user_${type}/${type}/${version}`,
+      `http://localhost:3000/api/new_signed_url_s3/${entityType}/bulles-bucket/${entityType}_${mediaType}/${mediaType}/${version}`,
       {
         method: "GET",
         credentials: "include",
@@ -70,13 +71,15 @@ async function uploadToS3(url, file) {
   }
 }
 
-async function uploadFile(file: File, type: string, version: number): Promise<boolean | Error> {
+async function uploadFile(file: File, entityType: string, mediaType: string, version: number): Promise<boolean | Error> {
   try {
-    const { url } = await generateURLToUploadFile(type, version);
+    const data = await generateURLToUploadFile(entityType, mediaType, version);
 
-    if (url) {
-      const success = await uploadToS3(url, file);
-      if (success) {
+    if (data.url) {
+      const success = await uploadToS3(data.url, file);
+      if (success && data.server_id) {
+        return data.server_id;
+      } else if (success) {
         return true;
       } else {
         throw new Error('Upload to S3 failed')
