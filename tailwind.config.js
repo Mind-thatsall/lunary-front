@@ -11,7 +11,10 @@ export default {
       }
     },
     colors: {
+      'alert': '#E44747',
+      'alerttext': '#D0DFF1',
       'bulle': {
+        100: '#31353A',
         300: '#60666E',
         500: '#5B636B',
         700: '#7F8792',

@@ -1,10 +1,25 @@
 <script>
   import { curr_server_store } from "../utils/stores";
 
-  let server_banner = "/src/assets/server_icon_test.png";
+  let changing = false;
+  let bannerImage = $curr_server_store.banner;
+
+  $: {
+    if ($curr_server_store.banner !== bannerImage) {
+      changing = true;
+      setTimeout(() => {
+        changing = false;
+        bannerImage = $curr_server_store.banner;
+      }, 150);
+    }
+  }
 </script>
 
-<div class="pointer-events-none h-screen w-screen overflow-hidden absolute">
+<div
+  class={`pointer-events-none h-screen w-screen overflow-hidden absolute ${
+    changing ? "opacity-0" : "opacity-100"
+  } transition-opacity-aura `}
+>
   <svg
     width="1262"
     height="571"
@@ -22,9 +37,7 @@
         patternContentUnits="objectBoundingBox"
       >
         <image
-          xlink:href={$curr_server_store.banner === ""
-            ? server_banner
-            : $curr_server_store.banner}
+          xlink:href={bannerImage}
           x="0"
           y="0"
           width="1"
@@ -45,5 +58,11 @@
     filter: blur(100px);
     z-index: -1;
     opacity: 55%;
+  }
+
+  .transition-opacity-aura {
+    transition-property: opacity;
+    transition-timing-function: ease-in-out;
+    transition-duration: 150ms;
   }
 </style>

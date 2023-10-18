@@ -87,6 +87,15 @@
     }
   }
 
+  function resizeImage(sourceCanvas, targetWidth, targetHeight) {
+    const tempCanvas = document.createElement("canvas");
+    const tempCtx = tempCanvas.getContext("2d");
+    tempCanvas.width = targetWidth;
+    tempCanvas.height = targetHeight;
+    tempCtx.drawImage(sourceCanvas, 0, 0, targetWidth, targetHeight);
+    return tempCanvas;
+  }
+
   export function getCroppedImage(type) {
     // Get the image
 
@@ -131,8 +140,13 @@
       cropHeight
     );
 
+    const RESIZE_WIDTH = 267;
+    const RESIZE_HEIGHT = 176;
+
+    const resizedCanvas = resizeImage(canvas, RESIZE_WIDTH, RESIZE_HEIGHT);
+
     return new Promise((resolve, reject) => {
-      canvas.toBlob(
+      resizedCanvas.toBlob(
         (blob) => {
           if (blob === null) {
             reject(new Error("Failed to create blob."));

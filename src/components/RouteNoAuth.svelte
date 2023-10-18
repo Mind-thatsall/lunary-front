@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Route, useLocation } from "svelte-routing";
+  import { Route } from "svelte-routing";
   import { user_store } from "../utils/stores";
   import Redirect from "./Redirect.svelte";
 

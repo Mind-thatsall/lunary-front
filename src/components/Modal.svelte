@@ -1,13 +1,7 @@
 <script lang="ts">
-  export let component;
+  export let component, nameModal;
 </script>
 
-<dialog id="modal-server">
+<dialog id={`modal-${nameModal}`} style="background-color: rgba(0, 0, 0, 0);">
   <svelte:component this={component} />
 </dialog>
-
-<style>
-  #modal-server {
-    background-color: rgba(0, 0, 0, 0);
-  }
-</style>

@@ -1,9 +1,14 @@
 <script lang="ts">
   import ServerBox from "./ServerBox.svelte";
-  import { useLocation } from "svelte-routing";
+  import { navigate, useLocation } from "svelte-routing";
   import { onDestroy, onMount } from "svelte";
   import type { Unsubscriber } from "svelte/store";
-  import { curr_server_store, current_loc } from "../utils/stores";
+  import {
+    server_list,
+    curr_server_store,
+    current_loc,
+    user_store,
+  } from "../utils/stores";
   import logo from "../assets/Lunary.svg";
   import Modal from "./Modal.svelte";
   import CreateServer from "./CreateServer.svelte";
@@ -14,7 +19,7 @@
   let servers = [];
   let serversLen = 0;
   let currentServerId: string;
-  let modal;
+  let modal: HTMLDialogElement;
 
   async function fetchServersOfUsers() {
     try {
@@ -31,8 +36,10 @@
         console.error(response.statusText);
       }
 
-      servers = data;
-      serversLen = servers.length;
+      server_list.set(data);
+      if ($server_list) {
+        serversLen = $server_list.length;
+      }
       return data;
     } catch (error) {
       console.error(error);
@@ -43,29 +50,27 @@
     modal.showModal();
   }
 
-  function closeModal() {
-    modal.close();
-  }
-
   onMount(() => {
-    modal = document.getElementById("modal-server");
+    modal = document.getElementById("modal-server") as HTMLDialogElement;
 
     unsubscribe = loc.subscribe((val) => {
-      currentLoc = val.pathname.slice(1);
-      let currentLocSplit = currentLoc.split("/");
-      currentServerId = currentLocSplit.at(-2);
-      current_loc.set(val.pathname);
+      if ($current_loc === "/bulle/" || $current_loc === "/bulle") {
+      } else {
+        currentLoc = val.pathname.slice(1);
+        let currentLocSplit = currentLoc.split("/");
+        currentServerId = currentLocSplit.at(-2);
+        current_loc.set(val.pathname);
 
-      if (currentLocSplit[0] === "bulle") {
-        if (serversLen > 0) {
-          const currServer = servers.find(
-            (server) => server.server_id === currentServerId
-          );
+        if (currentLocSplit[0] === "bulle") {
+          if (serversLen > 0) {
+            const currServer = $server_list.find(
+              (server) => server.serverId === currentServerId
+            );
 
-          console.log($curr_server_store);
-          curr_server_store.update((val) => {
-            return currServer;
-          });
+            curr_server_store.update(() => {
+              return currServer;
+            });
+          }
         }
       }
     });
@@ -73,13 +78,14 @@
     fetchServersOfUsers().then((servers) => {
       currentServerId = localStorage.getItem("last_server");
 
-      const currServer = servers.find(
-        (server) => server.server_id === currentServerId
-      );
-
-      curr_server_store.update((val) => {
-        return currServer;
-      });
+      if (servers) {
+        const currServer = servers.find(
+          (server) => server.serverId === currentServerId
+        );
+        curr_server_store.update(() => {
+          return currServer;
+        });
+      }
     });
   });
 
@@ -88,8 +94,10 @@
   });
 </script>
 
-<div class="h-full width-bar flex-shrink-0">
-  <h1 class="flex items-center gap-3 py-5 px-8">
+<div
+  class="h-screen width-bar flex-shrink-0 select-none relative border-r-1 border-bulle-900/10 overflow-y-auto scrollbar-hide"
+>
+  <h1 class="flex items-center gap-3 py-5 px-8 fixed top-0 left-0">
     <img src={logo} alt="" />
     <div class="flex items-end gap-1">
       <p id="brand_name" class="text-4xl font-bold">Lunary</p>
@@ -97,15 +105,20 @@
     </div>
   </h1>
   <section>
-    <div class="px-8 flex flex-col gap-3">
-      {#each servers as server}
-        <ServerBox
-          server_id={server.server_id}
-          server_title={server.name}
-          server_description={server.description}
-          server_logo={server.banner}
-        />
-      {/each}
+    <div class="px-8 pt-20 pb-8 flex flex-col gap-3 overflow-y-auto">
+      {#if $server_list}
+        {#each $server_list as server}
+          <ServerBox
+            server_id={server.serverId}
+            server_title={server.name}
+            server_description={server.description}
+            server_logo={server.banner}
+            server_owner={server.owner === $user_store.id}
+          />
+        {/each}
+      {:else}
+        <p>nothin</p>
+      {/if}
       <button
         class="self-center w-24 h-10 text-2xl cursor-pointer hover:border-bulle-900/40 hover:bg-bulle-900/20 transition-colors rounded-lg border-1 border-bulle-900/10 bg-bulle-900/10 flex justify-center items-center active:bg-bulle-900/25"
         on:click={openModal}
@@ -114,7 +127,7 @@
       </button>
     </div>
   </section>
-  <Modal component={CreateServer} />
+  <Modal component={CreateServer} nameModal="server" />
 </div>
 
 <style>

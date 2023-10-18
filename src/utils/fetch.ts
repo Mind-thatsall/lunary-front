@@ -72,3 +72,30 @@ export async function fetchAllInformations() {
     console.error(error)
   }
 }
+
+
+export async function LeaveServer(id: string, type: string) {
+  const body = {
+    server_id: id,
+    type: type,
+  }
+
+  try {
+    const response = await fetch("http://localhost:3000/api/leave_server", {
+      method: "post",
+      body: JSON.stringify(body),
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json"
+
+      }
+    });
+
+    if (!response.ok) {
+      console.log(response.statusText)
+    }
+  } catch (error) {
+    console.log(error);
+  }
+
+}

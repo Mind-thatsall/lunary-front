@@ -1,27 +1,18 @@
 <script lang="ts">
   import ChatInput from "../components/ChatInput.svelte";
   import ChatElement from "../components/ChatElement.svelte";
-  import {
-    messages_store,
-    socket,
-    last_visited_channel_store,
-  } from "../utils/stores";
+  import { messages_store, last_visited_channel_store } from "../utils/stores";
   import { onDestroy, onMount } from "svelte";
   import { useLocation } from "svelte-routing";
   import type { Unsubscriber } from "svelte/store";
   import { afterUpdate } from "svelte";
 
-  let Message;
   let loc = useLocation();
   let currentChannel: string;
   let currentServer: string;
   let unsubscribe: Unsubscriber;
   let container: HTMLElement;
-
-  async function loadproto() {
-    const root = await protobuf.load("/src/protobuf/user_message.proto");
-    Message = root.lookupType("messagepackage.UserMessage");
-  }
+  let hideInput = false;
 
   async function fetchMessagesOfChannel() {
     try {
@@ -41,7 +32,6 @@
         console.error(response.statusText);
       }
 
-      console.log(data);
       if (data !== null) {
         messages_store.set(data);
       } else {
@@ -53,17 +43,33 @@
     }
   }
 
-  $: {
-    if ($socket) {
-      $socket.onmessage = (message) => {
-        const data = new Uint8Array(message.data);
-        const decodedMessage = Message.decode(data);
-        console.log(decodedMessage);
-
-        if (decodedMessage.channelid === currentChannel) {
-          messages_store.update((messages) => [...messages, decodedMessage]);
+  async function fetchMessagesOfFriend() {
+    try {
+      const response = await fetch(
+        `http://localhost:3000/api/messages/friend/${currentChannel}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
-      };
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error(response.statusText);
+        throw new Error(data.error);
+      }
+
+      if (data !== null) {
+        messages_store.set(data);
+      } else {
+        messages_store.set([]);
+      }
+      return data;
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -75,24 +81,32 @@
 
   onMount(() => {
     unsubscribe = loc.subscribe((val) => {
-      let locSplit = val.pathname.split("/");
+      let locSplit = val.pathname.slice(1).split("/");
 
-      if (currentServer !== locSplit.at(-2)) {
-        currentServer = locSplit.at(-2);
+      if (locSplit[0] === "bulle") {
+        if (currentServer !== locSplit.at(-2)) {
+          currentServer = locSplit.at(-2);
+        }
+
+        if (currentChannel !== locSplit.at(-1)) {
+          currentChannel = locSplit.at(-1);
+          fetchMessagesOfChannel();
+        }
+
+        last_visited_channel_store.update((state) => ({
+          ...state,
+          [currentServer]: currentChannel,
+        }));
+      } else if (locSplit[0] === "me") {
+        if (locSplit[1]) {
+          currentChannel = locSplit.at(-1);
+          fetchMessagesOfChannel();
+          hideInput = false;
+        } else {
+          hideInput = true;
+        }
       }
-
-      if (currentChannel !== locSplit.at(-1)) {
-        currentChannel = locSplit.at(-1);
-        fetchMessagesOfChannel();
-      }
-
-      last_visited_channel_store.update((state) => ({
-        ...state,
-        [currentServer]: currentChannel,
-      }));
     });
-
-    loadproto().catch((err) => console.log(err));
   });
 
   onDestroy(() => {
@@ -119,5 +133,7 @@
       {/if}
     </div>
   </div>
-  <ChatInput />
+  {#if !hideInput}
+    <ChatInput />
+  {/if}
 </main>
