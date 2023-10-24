@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
   import ImageCropper from "./ImageCropper.svelte";
   import { uploadFile } from "../utils/s3";
+  import { BACKEND_URL } from "../utils/stores";
 
   let modal: HTMLDialogElement;
   let imageCropServerBanner;
@@ -9,46 +10,50 @@
   async function createServer(ev: Event) {
     ev.preventDefault();
 
-    const fileServerBanner = await imageCropServerBanner.getCroppedImage(
-      "server_banner"
+    const form = new FormData(
+      document.getElementById("server-form") as HTMLFormElement
     );
 
-    const serverId = await uploadFile(fileServerBanner, "server", "banner", 1);
+    const body = {
+      description: form.get("server_desc"),
+      name: form.get("server_name"),
+      status: form.get("server_type"),
+    };
 
-    if (serverId) {
-      const form = new FormData(
-        document.getElementById("server-form") as HTMLFormElement
-      );
+    try {
+      const response = await fetch(`${$BACKEND_URL}/api/create_server`, {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify(body),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-      const body = {
-        server_id: serverId,
-        banner: `https://d2b2cq6cks3j1i.cloudfront.net/server_banner/banner_${serverId}_v1.webp`,
-        description: form.get("server_desc"),
-        name: form.get("server_name"),
-        status: form.get("server_type"),
-      };
+      const data = await response.json();
 
-      try {
-        const response = await fetch(
-          "http://localhost:3000/api/create_server",
-          {
-            method: "POST",
-            credentials: "include",
-            body: JSON.stringify(body),
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+      if (!response.ok) {
+        console.error(response.statusText);
+        throw new Error(data.error);
+      }
+
+      if (data) {
+        const fileServerBanner = await imageCropServerBanner.getCroppedImage(
+          "server_banner"
         );
 
-        if (!response.ok) {
-          console.error(response.statusText);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        closeModal();
+        const response = await uploadFile(
+          fileServerBanner,
+          data,
+          "server",
+          "banner",
+          1
+        );
       }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      closeModal();
     }
   }
 

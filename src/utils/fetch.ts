@@ -3,7 +3,7 @@ import { get } from 'svelte/store';
 
 export async function fetchUser(): Promise<boolean> {
   try {
-    const response = await fetch("http://localhost:3000/api/user/check", {
+    const response = await fetch("https://127.0.0.1/api/user/check", {
       method: "get",
       credentials: "include",
     });
@@ -19,7 +19,7 @@ export async function updateServersState() {
   const servers_state = get(last_visited_channel_store)
 
   try {
-    const response = await fetch("http://localhost:3000/api/update_server_state", {
+    const response = await fetch("https://127.0.0.1/api/update_server_state", {
       method: "post",
       body: JSON.stringify(servers_state),
       credentials: "include",
@@ -41,7 +41,7 @@ export async function updateServersState() {
 
 async function getServersState() {
   try {
-    const response = await fetch("http://localhost:3000/api/get_last_servers_state", {
+    const response = await fetch("https://127.0.0.1/api/get_last_servers_state", {
       method: "get",
       credentials: "include",
     });
@@ -81,7 +81,7 @@ export async function LeaveServer(id: string, type: string) {
   }
 
   try {
-    const response = await fetch("http://localhost:3000/api/leave_server", {
+    const response = await fetch("https://127.0.0.1/api/leave_server", {
       method: "post",
       body: JSON.stringify(body),
       credentials: "include",

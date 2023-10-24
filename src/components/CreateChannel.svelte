@@ -5,6 +5,7 @@
     curr_server_store,
     context_menu,
     context_menu_states,
+    BACKEND_URL,
   } from "../utils/stores";
 
   let modal: HTMLDialogElement;
@@ -18,20 +19,29 @@
       document.getElementById("channel-form") as HTMLFormElement
     );
 
-    console.log($channel_list[$context_menu_states.category]);
+    const category = $context_menu_states.category
+      ? $context_menu_states.category
+      : "Home";
+
+    const categoryArr = $channel_list.find(
+      (channel) => channel.groupName === category
+    );
+
     const body = {
-      category: $context_menu_states.category,
+      category: category,
       channel: {
         serverId: $curr_server_store.serverId,
-        group: $channel_list[$context_menu_states.category].groupId,
+        group: category,
         name: form.get("channel_name"),
+        parentPosition: Number(categoryArr.channels[0].parentPosition),
+        position: categoryArr.channels.length,
         status: "public",
         type: form.get("channel_type"),
       },
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/create_channel", {
+      const response = await fetch(`${$BACKEND_URL}/api/create_channel`, {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(body),

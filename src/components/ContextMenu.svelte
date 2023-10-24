@@ -33,7 +33,7 @@
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/join_server", {
+      const response = await fetch("https://127.0.0.1/api/join_server", {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(body),
@@ -54,13 +54,14 @@
 
   async function deleteServerPOST() {
     serverIdDeleted = $context_menu_states.server_id;
+    console.log($context_menu_states);
 
     const body = {
       server_id: $context_menu_states.server_id,
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/delete_server", {
+      const response = await fetch("https://127.0.0.1/api/delete_server", {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(body),
@@ -100,7 +101,7 @@
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/leave_server", {
+      const response = await fetch("https://127.0.0.1/api/leave_server", {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(body),
@@ -142,7 +143,7 @@
     };
 
     try {
-      const response = await fetch("http://localhost:3000/api/delete_channel", {
+      const response = await fetch("https://127.0.0.1/api/delete_channel", {
         method: "POST",
         credentials: "include",
         body: JSON.stringify(body),
@@ -166,18 +167,13 @@
 
     if (response) {
       if ($current_loc.split("/").at(-1) === channelIdDeleted) {
-        const firstChannel =
-          $channel_list[Object.keys($channel_list)[0]][0].channelId;
+        const firstChannel = $channel_list[0].channels[0].channelId;
         navigate(`/bulle/${$curr_server_store.serverId}/${firstChannel}`);
       }
     }
   }
 
   function editMessage() {}
-
-  function addChannel(e) {
-    console.log("helol");
-  }
 
   function addCategory() {
     console.log($context_menu_states);
@@ -193,7 +189,7 @@
 
 <div
   id="contextmenu"
-  class="z-10 absolute hidden w-44 px-2 py-2 h-auto bg-bulle-100 rounded-lg border-bulle-900/10 border-1"
+  class="z-50 absolute hidden w-44 px-2 py-2 h-auto bg-bullebg-100/10 backdrop-blur-md rounded-lg border-bulle-900/10 border-1"
 >
   {#if $context_menu.type === "channels" && $context_menu_states.is_owner}
     <div id="server-context" class="flex flex-col gap-1">

@@ -80,3 +80,27 @@ a {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+.chat-input-buttons {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+.chat-input-buttons:hover #add-element-svg path {
+    stroke: rgb(244, 255, 255);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+.chat-input-buttons:hover #add-element-svg {
+   filter: drop-shadow(0px 0px 14px #FFF);
+   transition: all 125ms cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+.chat-input-buttons:hover #add-emoji-svg path {
+    fill: rgb(244, 255, 255);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1)
+}
+
+.chat-input-buttons:hover #add-emoji-svg {
+   filter: drop-shadow(0px 0px 14px #FFF);
+   transition: all 125ms cubic-bezier(0.4, 0, 0.2, 1)
+}

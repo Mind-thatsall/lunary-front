@@ -38,6 +38,8 @@
       if (fileBanner) {
         const success = await uploadFile(
           fileBanner,
+          "user",
+          "user",
           "banner",
           newVersionBanner
         );
@@ -56,6 +58,8 @@
       if (fileAvatar) {
         const success = await uploadFile(
           fileAvatar,
+          "user",
+          "user",
           "avatar",
           newVersionAvatar
         );

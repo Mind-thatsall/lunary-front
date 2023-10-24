@@ -11,6 +11,7 @@ export default {
       }
     },
     colors: {
+      'accent': "#FFAE63",
       'alert': '#E44747',
       'alerttext': '#D0DFF1',
       'bulle': {

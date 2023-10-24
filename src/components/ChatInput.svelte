@@ -1,13 +1,13 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
   import { user_store, current_loc } from "../utils/stores";
-  import upload from "../assets/upload.svg";
-  import emoji from "../assets/emoji.svg";
+  import AddEmojiSvg from "./AddEmojiSVG.svelte";
+  import AddElementSvg from "./AddElementSVG.svelte";
 
   let currentChannel = "";
   let currentServer = "";
   let url = "";
-  let URL_BASE = "http://localhost:3000/api/";
+  let URL_BASE = "https://127.0.0.1/api/";
   let content = "";
   let sendToFriend = false;
 
@@ -49,7 +49,7 @@
       }
 
       content = "";
-      chat_input.style.height = "62px";
+      chat_input.style.height = "72px";
     }
   }
 
@@ -118,24 +118,20 @@
     const chat_input_container = document.getElementById(
       "chat-input-container"
     );
-
-    textarea.style.width = chat_input_container.clientWidth - 86 * 2 + "px";
-
-    window.onresize = () => resizeChatInput(textarea, chat_input_container);
   });
 </script>
 
 <div
   id="chat-input-container"
-  class="w-full flex absolute bottom-2 gap-2 max-w-full px-4"
+  class="w-full flex absolute bottom-0 max-w-full border-t-1 bg-bullebg-100/10 backdrop-blur-xl border-bulle-900/10"
 >
-  <span
-    class="select-none flex items-center justify-center bg-bulle-900/10 h-[62px] w-[62px] rounded-lg border-bulle-900/10 border-1 backdrop-blur-xl hover:bg-bulle-900/20 hover:border-bulle-900/40 hover:cursor-pointer transition-colors"
-    ><img src={upload} alt="" /></span
+  <button
+    class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
+    ><AddElementSvg /></button
   >
   <form action="#" class="flex-grow relative">
     <span
-      class="font-normal absolute inset-0 z-[2] flex items-center text-lg px-[1.55rem] text-bulle-700 pointer-events-none select-none"
+      class="font-normal absolute inset-0 z-[2] flex items-center text-lg px-[1.05rem] text-bulle-700 pointer-events-none select-none"
       style={content !== "" ? "visibility: hidden;" : "visible"}
     >
       Send a message...
@@ -144,7 +140,7 @@
       on:input={autoResize}
       on:keydown={sendMessage}
       on:paste={handlePaste}
-      class="focus-visible:border-bulle-900/40 transition-colors resize-none rounded-lg max-h-72 py-4 min-h-[62px] max-w-full w-full h-14 border-1 border-bulle-900/10 px-6 backdrop-blur-xl bg-bulle-900/10 focus-visible:outline-none text-lg overflow-y-auto scrollbar-hide placeholder:text-bulle-700"
+      class="transition-colors resize-none max-h-72 py-5 min-h-[72px] max-w-full w-full h-14 px-4 focus-visible:outline-none text-lg overflow-y-auto scrollbar-hide placeholder:text-bulle-700"
       contenteditable
       id="textarea"
       aria-label="Send a message in ..."
@@ -158,16 +154,16 @@
       tabindex="2"
     />
   </form>
-  <span
-    class="select-none flex items-center justify-center bg-bulle-900/10 h-[62px] w-[62px] rounded-lg border-bulle-900/10 border-1 hover:bg-bulle-900/20 hover:border-bulle-900/40 hover:cursor-pointer transition-colors"
-    ><img src={emoji} alt="" /></span
+  <button
+    class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
+    ><AddEmojiSvg /></button
   >
 </div>
 
 <style>
   #textarea {
     white-space: pre-wrap;
+    word-break: break-word;
     overflow-wrap: break-word;
-    word-wrap: break-word;
   }
 </style>
