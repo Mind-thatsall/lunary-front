@@ -1,8 +1,7 @@
 <script lang="ts">
-  import user_icon from "../assets/server_icon_test.png";
-  import { formattedHTML } from "../utils/markdown";
-  import { context_menu, user_store } from "../utils/stores";
-  import { openingMenu } from "../utils/contextmenu";
+  import { formattedHTML } from "../../utils/markdown";
+  import { context_menu, user_store } from "../../utils/stores";
+  import { openingMenu } from "../../utils/contextmenu";
 
   function convertToLocaleDate(utcTime) {
     let utcDate: Date;

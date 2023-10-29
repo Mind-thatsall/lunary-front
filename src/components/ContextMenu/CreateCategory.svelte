@@ -7,10 +7,6 @@
     ev.preventDefault();
   }
 
-  function closeModal() {
-    modal.close();
-  }
-
   onMount(() => {
     modal = document.getElementById("modal-category") as HTMLDialogElement;
   });

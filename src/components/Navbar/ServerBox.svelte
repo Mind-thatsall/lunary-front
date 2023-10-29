@@ -1,11 +1,11 @@
 <script>
   import { link } from "svelte-routing";
-  import server_icon_test from "../assets/server_icon_test.png";
-  import { openingMenu } from "../utils/contextmenu";
+  import server_icon_test from "../../assets/server_icon_test.png";
+  import { openingMenu } from "../../utils/contextmenu";
   import {
     last_visited_channel_store,
     curr_server_store,
-  } from "../utils/stores";
+  } from "../../utils/stores";
 
   let isCurrentServer = false;
   export let server_id,

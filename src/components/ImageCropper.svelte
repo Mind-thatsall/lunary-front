@@ -16,7 +16,6 @@
   let posX = 0;
   let posY = 0;
   let scale = 1;
-  let maxScale = 0;
   let minScale = 0;
   let dragImg = false;
 

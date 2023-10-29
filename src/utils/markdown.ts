@@ -3,6 +3,7 @@ import DOMPurify from "dompurify";
 export function formattedHTML(userInput: string) {
 
   let escaped = escapeCharacter(userInput)
+  console.log(escaped)
 
   let formatted = escaped.replace(/\*\*(.*?)\*\*/g, "<span class='font-bold'>$1</span>")
     .replace(/\*(.*?)\*/g, "<span class='text-italic'>$1</span>")

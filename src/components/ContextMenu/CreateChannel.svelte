@@ -3,10 +3,8 @@
   import {
     channel_list,
     curr_server_store,
-    context_menu,
     context_menu_states,
-    BACKEND_URL,
-  } from "../utils/stores";
+  } from "../../utils/stores";
 
   let modal: HTMLDialogElement;
   let selectedRadioButton = "textual";
@@ -41,14 +39,17 @@
     };
 
     try {
-      const response = await fetch(`${$BACKEND_URL}/api/create_channel`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/create_channel`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         console.error(response.statusText);

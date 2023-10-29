@@ -1,7 +1,7 @@
 <script lang="ts">
   import { link } from "svelte-routing";
-  import icon_textual from "../assets/icon_text_channel.svg";
-  import { openingMenu } from "../utils/contextmenu";
+  import icon_textual from "../../assets/icon_text_channel.svg";
+  import { openingMenu } from "../../utils/contextmenu";
 
   export let server_id,
     channel_id,

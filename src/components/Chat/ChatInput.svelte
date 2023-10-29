@@ -1,15 +1,13 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
-  import { user_store, current_loc } from "../utils/stores";
+  import { user_store, current_loc } from "../../utils/stores";
   import AddEmojiSvg from "./AddEmojiSVG.svelte";
   import AddElementSvg from "./AddElementSVG.svelte";
 
   let currentChannel = "";
   let currentServer = "";
   let url = "";
-  let URL_BASE = "https://127.0.0.1/api/";
   let content = "";
-  let sendToFriend = false;
 
   async function autoResize(ev: Event) {
     let target = ev.target as HTMLTextAreaElement;
@@ -58,9 +56,11 @@
     currentChannel = locSplit.at(-1);
     if (locSplit[0] === "bulle") {
       currentServer = locSplit.at(-2);
-      url = URL_BASE + `new_message/${currentServer}/${currentChannel}`;
+      url = `${
+        import.meta.env.VITE_API_URL
+      }/api/new_message/${currentServer}/${currentChannel}`;
     } else {
-      url = URL_BASE + `new_dm/${currentChannel}`;
+      url = `${import.meta.env.VITE_API_URL}/api/new_dm/${currentChannel}`;
     }
   }
 
@@ -146,7 +146,7 @@
       aria-label="Send a message in ..."
       aria-multiline="true"
       aria-placeholder="Send a message in ..."
-      bind:textContent={content}
+      bind:innerText={content}
       spellcheck="true"
       autocorrect="off"
       aria-invalid="false"

@@ -2,13 +2,11 @@
   import {
     curr_server_store,
     channel_list,
-    BACKEND_URL,
     current_loc,
-    server_list,
     user_store,
     socket,
-  } from "../utils/stores";
-  import { openingMenu } from "../utils/contextmenu";
+  } from "../../utils/stores";
+  import { openingMenu } from "../../utils/contextmenu";
   import Channel from "./Channel.svelte";
   import SectionHeader from "./SectionHeader.svelte";
 
@@ -16,7 +14,6 @@
 
   let server_id: string;
   let current_channel_id = "";
-  let modal: HTMLDialogElement;
   let isOwner = false;
 
   function dropdown(ev: Event) {
@@ -29,30 +26,6 @@
     }
   }
 
-  async function fetchServerInformations() {
-    try {
-      const response = await fetch(
-        `${$BACKEND_URL}/api/channels/${server_id}`,
-        {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const data = await response.json();
-
-      if (!response.ok) {
-        console.error(response.statusText);
-      }
-
-      channel_list.set(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
   $: if ($current_loc || $socket) {
     isOwner = $curr_server_store.owner === $user_store.id;
     currentLocation = $current_loc.slice(1).split("/");
@@ -60,7 +33,6 @@
       if (server_id !== currentLocation[1] && currentLocation[1] !== "") {
         localStorage.setItem("last_server", currentLocation[1]);
         server_id = currentLocation[1];
-        //fetchServerInformations();
         if ($socket) {
           const body = {
             type: "change_server",
@@ -77,7 +49,6 @@
       }
     } else {
       server_id = localStorage.getItem("last_server");
-      //fetchServerInformations();
     }
   }
 </script>

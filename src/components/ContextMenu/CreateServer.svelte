@@ -1,8 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import ImageCropper from "./ImageCropper.svelte";
-  import { uploadFile } from "../utils/s3";
-  import { BACKEND_URL } from "../utils/stores";
+  import ImageCropper from "../ImageCropper.svelte";
+  import { uploadFile } from "../../utils/s3";
 
   let modal: HTMLDialogElement;
   let imageCropServerBanner;
@@ -21,14 +20,17 @@
     };
 
     try {
-      const response = await fetch(`${$BACKEND_URL}/api/create_server`, {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/create_server`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       const data = await response.json();
 

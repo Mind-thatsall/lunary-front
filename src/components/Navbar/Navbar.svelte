@@ -1,22 +1,16 @@
 <script lang="ts">
   import ServerBox from "./ServerBox.svelte";
-  import { navigate, useLocation } from "svelte-routing";
-  import { onDestroy, onMount } from "svelte";
-  import type { Unsubscriber } from "svelte/store";
+  import { onMount } from "svelte";
   import {
     server_list,
     curr_server_store,
     current_loc,
     user_store,
-    BACKEND_URL,
-  } from "../utils/stores";
-  import Modal from "./Modal.svelte";
-  import CreateServer from "./CreateServer.svelte";
+  } from "../../utils/stores";
+  import Modal from "../Modal.svelte";
+  import CreateServer from "../ContextMenu/CreateServer.svelte";
 
-  let loc = useLocation();
   let currentLoc: string;
-  let unsubscribe: Unsubscriber;
-  let serversLen = 0;
   let currentServerId: string;
   let modal: HTMLDialogElement;
   let navbar: HTMLElement;
@@ -56,6 +50,8 @@
         const currServer = $server_list.find(
           (server) => server.serverId === currentServerId
         );
+
+        console.log($curr_server_store);
 
         curr_server_store.update(() => {
           return currServer;

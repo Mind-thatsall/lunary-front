@@ -19,14 +19,17 @@
         user_agent: navigator.userAgent,
       };
 
-      const response = await fetch("https://127.0.0.1/api/user/login", {
-        method: "POST",
-        body: JSON.stringify(body),
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/user/login`,
+        {
+          method: "POST",
+          body: JSON.stringify(body),
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       data = await response.json();
 

@@ -1,19 +1,10 @@
 <script lang="ts">
-  import {
-    current_loc,
-    curr_server_store,
-    channel_list,
-    server_list,
-    BACKEND_URL,
-  } from "../utils/stores";
-  import { user_store } from "../utils/stores";
-  import Modal from "./Modal.svelte";
-  import CreateChannel from "./CreateChannel.svelte";
-  import CreateCategory from "./CreateCategory.svelte";
+  import { current_loc, instant_notif } from "../../utils/stores";
+  import { user_store } from "../../utils/stores";
+  import Modal from "../Modal.svelte";
+  import CreateChannel from "../ContextMenu/CreateChannel.svelte";
+  import CreateCategory from "../ContextMenu/CreateCategory.svelte";
   import ServerMenu from "./ServerMenu.svelte";
-
-  let server_id: string;
-  let modal: HTMLDialogElement;
 </script>
 
 <div
@@ -30,8 +21,25 @@
     nothing
   {/if}
   <div
-    class="align-bottom absolute border-t-1 border-bulle-900/10 w-full h-[4.5626rem] bottom-0 left-0"
+    id="notification-box"
+    class="align-bottom absolute border-t-1 border-bulle-900/10 w-full h-[4.5626rem] bottom-0 left-0 overflow-hidden"
   >
+    <div
+      id="notification-message"
+      class="w-full absolute h-[5rem] bottom-[5.15rem] flex flex-col justify-between items-center"
+    >
+      <p class="h-full w-full flex justify-center items-center">
+        New message from {$instant_notif.displayName}
+      </p>
+      <div class="relative w-full">
+        <p
+          class="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 bg-bullebg-100 px-4"
+        >
+          NOTIFICATION
+        </p>
+        <hr class="mx-4 self-start" />
+      </div>
+    </div>
     <div
       class="px-4 absolute w-full flex items-center justify-between h-[4.5626rem] left-0 bottom-0"
     >
@@ -56,5 +64,12 @@
 <style>
   .width-bar {
     width: 300px;
+  }
+
+  #notification-box {
+    transition: height 0.45s ease-in-out;
+  }
+  #notification-message {
+    transition: opacity 0.45s ease-in-out;
   }
 </style>

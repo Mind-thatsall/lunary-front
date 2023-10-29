@@ -1,9 +1,9 @@
-import { user_store, last_visited_channel_store } from './stores'
+import { last_visited_channel_store } from './stores'
 import { get } from 'svelte/store';
 
 export async function fetchUser(): Promise<boolean> {
   try {
-    const response = await fetch("https://127.0.0.1/api/user/check", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/user/check`, {
       method: "get",
       credentials: "include",
     });
@@ -19,7 +19,7 @@ export async function updateServersState() {
   const servers_state = get(last_visited_channel_store)
 
   try {
-    const response = await fetch("https://127.0.0.1/api/update_server_state", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/update_server_state`, {
       method: "post",
       body: JSON.stringify(servers_state),
       credentials: "include",
@@ -39,41 +39,6 @@ export async function updateServersState() {
 }
 
 
-async function getServersState() {
-  try {
-    const response = await fetch("https://127.0.0.1/api/get_last_servers_state", {
-      method: "get",
-      credentials: "include",
-    });
-    const data = await response.json();
-
-    return data
-  } catch (error) {
-    console.log(error);
-  }
-}
-
-export async function fetchAllInformations() {
-  try {
-    const user = await fetchUser();
-
-    if (user) {
-      user_store.set(user);
-      const servers_state = await getServersState()
-      if (servers_state) {
-        last_visited_channel_store.set(servers_state);
-      } else {
-        throw new Error("Error when fetching the last servers state.")
-      }
-    } else {
-      throw new Error("Error when fetching the user.")
-    }
-  } catch (error) {
-    console.error(error)
-  }
-}
-
-
 export async function LeaveServer(id: string, type: string) {
   const body = {
     server_id: id,
@@ -81,7 +46,7 @@ export async function LeaveServer(id: string, type: string) {
   }
 
   try {
-    const response = await fetch("https://127.0.0.1/api/leave_server", {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/leave_server`, {
       method: "post",
       body: JSON.stringify(body),
       credentials: "include",

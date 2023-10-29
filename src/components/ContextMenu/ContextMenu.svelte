@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { onMount } from "svelte";
   import {
     context_menu,
     curr_server_store,
@@ -9,7 +8,7 @@
     current_loc,
     channel_list,
     user_store,
-  } from "../utils/stores";
+  } from "../../utils/stores";
   import { navigate } from "svelte-routing";
 
   let serverIdDeleted = "";
@@ -33,14 +32,17 @@
     };
 
     try {
-      const response = await fetch("https://127.0.0.1/api/join_server", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/join_server`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -61,14 +63,17 @@
     };
 
     try {
-      const response = await fetch("https://127.0.0.1/api/delete_server", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/delete_server`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -82,15 +87,6 @@
 
   async function deleteServer() {
     const response = await deleteServerPOST();
-
-    if (response) {
-      if ($curr_server_store.serverId === serverIdDeleted) {
-        const firstServer = $server_list[0].serverId;
-        navigate(
-          `/bulle/${firstServer}/${$last_visited_channel_store[firstServer]}`
-        );
-      }
-    }
   }
 
   async function leaveServerPOST() {
@@ -101,14 +97,17 @@
     };
 
     try {
-      const response = await fetch("https://127.0.0.1/api/leave_server", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/leave_server`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -143,14 +142,17 @@
     };
 
     try {
-      const response = await fetch("https://127.0.0.1/api/delete_channel", {
-        method: "POST",
-        credentials: "include",
-        body: JSON.stringify(body),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/delete_channel`,
+        {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify(body),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -164,13 +166,6 @@
 
   async function deleteChannel() {
     const response = await deleteChannelPOST();
-
-    if (response) {
-      if ($current_loc.split("/").at(-1) === channelIdDeleted) {
-        const firstChannel = $channel_list[0].channels[0].channelId;
-        navigate(`/bulle/${$curr_server_store.serverId}/${firstChannel}`);
-      }
-    }
   }
 
   function editMessage() {}

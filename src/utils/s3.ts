@@ -1,9 +1,11 @@
+import { get } from "svelte/store";
+import { new_server, server_list } from "./stores";
 
 async function generateURLToUploadFile(entity, entityType, mediaType, version) {
 
   try {
     const response = await fetch(
-      `https://127.0.0.1/api/new_signed_url_s3/${entity}/bulles-bucket/${entityType}_${mediaType}/${mediaType}/${version}`,
+      `${import.meta.env.VITE_API_URL}/api/new_signed_url_s3/${entity}/bulles-bucket/${entityType}_${mediaType}/${mediaType}/${version}`,
       {
         method: "GET",
         credentials: "include",
@@ -27,7 +29,7 @@ async function generateURLToUploadFile(entity, entityType, mediaType, version) {
 
 async function updateUserFilesInBackend(fileType: string, version: number) {
   try {
-    const response = await fetch(`https://127.0.0.1/api/update/${fileType}/${version}`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL}/api/update/${fileType}/${version}`, {
       method: "GET",
       credentials: "include",
       headers: {
@@ -77,6 +79,7 @@ async function uploadFile(file: File, entity: string, entityType: string, mediaT
     if (data.url) {
       const success = await uploadToS3(data.url, file);
       if (success) {
+        server_list.update((servers) => [...servers, get(new_server)])
         return true;
       } else {
         throw new Error('Upload to S3 failed')

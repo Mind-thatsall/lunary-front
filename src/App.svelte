@@ -2,19 +2,19 @@
   import { Router, Route } from "svelte-routing";
   import Home from "./pages/Home.svelte";
   import UserHome from "./pages/UserHome.svelte";
-  import Bulle from "./pages/Bulle.svelte";
-  import Navbar from "./components/Navbar.svelte";
-  import Userbar from "./components/Userbar.svelte";
+  import Bulle from "./pages/Chat.svelte";
+  import Navbar from "./components/Navbar/Navbar.svelte";
+  import Userbar from "./components/ServerBar/Userbar.svelte";
   import Signin from "./pages/Signin.svelte";
   import Signup from "./pages/Signup.svelte";
   import AuraEffect from "./components/AuraEffect.svelte";
   import { onMount } from "svelte";
   import { context_menu } from "./utils/stores";
   import { current_loc } from "./utils/stores";
-  import ContextMenu from "./components/ContextMenu.svelte";
+  import ContextMenu from "./components/ContextMenu/ContextMenu.svelte";
   import Locate from "./components/Locate.svelte";
 
-  function closeContextMenu(e: MouseEvent) {
+  function closeContextMenu() {
     const contextMenu = document.getElementById("contextmenu");
     if (!contextMenu.classList.contains("hidden")) {
       contextMenu.classList.add("hidden");
