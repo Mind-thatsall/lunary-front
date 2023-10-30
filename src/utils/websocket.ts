@@ -1,5 +1,5 @@
 import { navigate } from "svelte-routing/src/history";
-import { server_list, new_server, user_store, channel_list, messages_store, socket, last_visited_channel_store, current_loc, instant_notif, curr_server_store } from "./stores";
+import { server_list, new_server, user_store, channel_list, messages_store, socket, last_visited_channel_store, current_loc, instant_notif, curr_server_store, curr_server_users_store } from "./stores";
 import { get } from "svelte/store";
 
 let Message;
@@ -42,11 +42,13 @@ export function connect() {
           server_list.set(decodedMessage.initialLoad.servers);
           if (body.pos !== "me") {
             channel_list.set(decodedMessage.initialLoad.server.categories);
+            curr_server_users_store.set(decodedMessage.initialLoad.server.users)
           }
           socket.set(ws);
           last_visited_channel_store.set(
             decodedMessage.initialLoad.serverStates.map
           );
+
         case "message":
           const currentLoc = get(current_loc).slice(1).split('/');
           const currentChannel = currentLoc.at(-1);
@@ -141,6 +143,7 @@ export function connect() {
           break;
         case "change_server":
           channel_list.set(decodedMessage.changeServer.server.categories);
+          curr_server_users_store.set(decodedMessage.initialLoad.server.users)
           break;
       }
     };

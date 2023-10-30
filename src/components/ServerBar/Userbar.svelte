@@ -22,7 +22,7 @@
   {/if}
   <div
     id="notification-box"
-    class="align-bottom absolute border-t-1 border-bulle-900/10 w-full h-[4.5626rem] bottom-0 left-0 overflow-hidden"
+    class="align-bottom absolute border-t-1 border-bulle-900/10 w-full h-[4.8125rem] bottom-0 left-0 overflow-hidden"
   >
     <div
       id="notification-message"
@@ -41,7 +41,7 @@
       </div>
     </div>
     <div
-      class="px-4 absolute w-full flex items-center justify-between h-[4.5626rem] left-0 bottom-0"
+      class="px-4 absolute w-full flex items-center justify-between h-[4.8125rem] left-0 bottom-0"
     >
       <div
         class="flex gap-4 items-center hover:cursor-pointer hover:bg-bulle-900/10 border-1 border-bulle-900/0 hover:border-bulle-900/10 rounded-md pr-4 transition-colors"

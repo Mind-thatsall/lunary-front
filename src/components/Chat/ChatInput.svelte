@@ -1,13 +1,41 @@
 <script lang="ts">
   import { onMount, tick } from "svelte";
-  import { user_store, current_loc } from "../../utils/stores";
+  import {
+    user_store,
+    current_loc,
+    curr_server_users_store,
+  } from "../../utils/stores";
   import AddEmojiSvg from "./AddEmojiSVG.svelte";
   import AddElementSvg from "./AddElementSVG.svelte";
+  import { writable } from "svelte/store";
 
   let currentChannel = "";
   let currentServer = "";
   let url = "";
   let content = "";
+  let mentions = [];
+  let mentionsRoles = [];
+  let showSuggestions = false;
+  let typing = false;
+  let userInputMention = "";
+  const ignoredKeys = [
+    "Delete",
+    "Enter",
+    "Meta",
+    "Control",
+    "Alt",
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    "Backspace",
+    "Escape",
+    "CapsLock",
+    "Tab",
+    "Shift",
+  ];
+  let currentSpan; // Create the initial span
+  let currentLine;
 
   async function autoResize(ev: Event) {
     let target = ev.target as HTMLTextAreaElement;
@@ -17,16 +45,109 @@
     target.style.height = `${target.scrollHeight}px`;
   }
 
+  // Utility function to create a new span
+  function createLine() {
+    const div = document.createElement("div");
+    div.className = "w-full h-7";
+    const textarea = document.getElementById("textarea");
+    textarea.appendChild(div);
+    return div;
+  }
+  function createSpan(line: HTMLElement) {
+    const span = document.createElement("span");
+    span.className = "h-full min-w-[1px] inline-block";
+    line.appendChild(span);
+    return span;
+  }
+
+  function setCaretPosition(element) {
+    const range = document.createRange();
+    const sel = window.getSelection();
+    range.selectNodeContents(element);
+    range.collapse(false);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
   async function sendMessage(ev: KeyboardEvent) {
     const chat_input = document.getElementById(
       "textarea"
     ) as HTMLTextAreaElement;
+    typing = true;
+    ev.preventDefault();
 
-    if (ev.key === "Enter" && !ev.shiftKey) {
+    if (ev.key === "@") {
+      currentSpan = createSpan(currentLine);
+      currentSpan.innerText += "@";
+      showSuggestions = true;
+    } else if (showSuggestions && !ignoredKeys.includes(ev.key)) {
+      userInputMention += ev.key;
+      currentSpan.innerText += ev.key;
+    } else if (ev.key === "Backspace" && showSuggestions) {
+      if (userInputMention === "") {
+        showSuggestions = false;
+      } else {
+        userInputMention = userInputMention.slice(0, -1);
+        currentSpan.innerText = currentSpan.innerText.slice(0, -1);
+      }
+    } else if (ev.key === "Backspace") {
+      if (currentSpan.innerText.length === 0) {
+        let previousSpan = currentSpan.previousSibling;
+
+        if (previousSpan) {
+          currentLine.removeChild(currentSpan);
+          currentSpan = previousSpan;
+          previousSpan = currentSpan.previousSibling;
+          if (previousSpan) {
+            currentLine.removeChild(currentSpan);
+            currentSpan = previousSpan;
+          }
+        } else {
+          let previousLine = currentLine.previousSibling;
+          if (previousLine) {
+            chat_input.removeChild(currentLine);
+            currentLine = previousLine;
+            currentSpan =
+              currentLine.childNodes[currentLine.childNodes.length - 1];
+          }
+        }
+      } else {
+        currentSpan.innerText = currentSpan.innerText.slice(0, -1);
+      }
+    } else if (ev.shiftKey && ev.key === "Enter") {
+      currentLine = createLine();
+      currentSpan = createSpan(currentLine);
+    } else if (!ignoredKeys.includes(ev.key)) {
+      currentSpan.innerText += ev.key;
+    }
+
+    console.log(chat_input.children[0].children[0].innerHTML === "");
+    if (chat_input.children[0].children[0].innerHTML === "") {
+      typing = false;
+    }
+
+    setCaretPosition(chat_input);
+    if (ev.key === "Enter" && showSuggestions && !ev.shiftKey) {
+      let validMention = $curr_server_users_store.find(
+        (user) => user.displayName === userInputMention
+      );
+      if (validMention) {
+        currentSpan.classList.add("bg-bulle-900/10");
+        currentSpan = createSpan(currentLine);
+        currentSpan.innerText += " ";
+        userInputMention = "";
+        showSuggestions = false;
+        mentions.push(validMention.id);
+        setCaretPosition(chat_input);
+      }
+    } else if (ev.key === "Enter" && !ev.shiftKey) {
       ev.preventDefault();
+
       const body = {
         content: content,
         sender: $user_store,
+        mentions: mentions,
+        mentionsRoles: mentionsRoles,
       };
 
       try {
@@ -46,9 +167,10 @@
         console.error("Error on send message: ", error);
       }
 
-      content = "";
+      currentSpan = createSpan(currentLine);
       chat_input.style.height = "72px";
     }
+    autoResize(ev);
   }
 
   $: if ($current_loc) {
@@ -114,50 +236,55 @@
   }
 
   onMount(() => {
-    const textarea = document.getElementById("textarea");
-    const chat_input_container = document.getElementById(
-      "chat-input-container"
-    );
+    currentLine = createLine();
+    currentSpan = createSpan(currentLine);
   });
 </script>
 
 <div
   id="chat-input-container"
-  class="w-full flex absolute bottom-0 max-w-full border-t-1 bg-bullebg-100/10 backdrop-blur-xl border-bulle-900/10"
+  class="w-full flex flex-col absolute bottom-0 max-w-full border-t-1 bg-bullebg-100/10 backdrop-blur-xl border-bulle-900/10 transition-all"
 >
-  <button
-    class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
-    ><AddElementSvg /></button
-  >
-  <form action="#" class="flex-grow relative">
-    <span
-      class="font-normal absolute inset-0 z-[2] flex items-center text-lg px-[1.05rem] text-bulle-700 pointer-events-none select-none"
-      style={content !== "" ? "visibility: hidden;" : "visible"}
+  {#if showSuggestions}
+    {#each $curr_server_users_store as user}
+      {#if user.displayName.startsWith(userInputMention)}
+        <div>{user.displayName}</div>
+      {/if}
+    {/each}
+  {/if}
+  <div class="flex w-full">
+    <button
+      class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
+      ><AddElementSvg /></button
     >
-      Send a message...
-    </span>
-    <div
-      on:input={autoResize}
-      on:keydown={sendMessage}
-      on:paste={handlePaste}
-      class="transition-colors resize-none max-h-72 py-5 min-h-[72px] max-w-full w-full h-14 px-4 focus-visible:outline-none text-lg overflow-y-auto scrollbar-hide placeholder:text-bulle-700"
-      contenteditable
-      id="textarea"
-      aria-label="Send a message in ..."
-      aria-multiline="true"
-      aria-placeholder="Send a message in ..."
-      bind:innerText={content}
-      spellcheck="true"
-      autocorrect="off"
-      aria-invalid="false"
-      role="textbox"
-      tabindex="2"
-    />
-  </form>
-  <button
-    class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
-    ><AddEmojiSvg /></button
-  >
+    <form action="#" class="flex-grow relative">
+      <span
+        class="font-normal absolute inset-0 z-[2] flex items-center text-lg px-[1.05rem] text-bulle-700 pointer-events-none select-none"
+        style={typing ? "visibility: hidden;" : "visible"}
+      >
+        Send a message...
+      </span>
+      <div
+        on:keydown={sendMessage}
+        on:paste={handlePaste}
+        class="transition-colors resize-none py-6 flex items-center leading-[28px] flex-col justify-center max-h-72 min-h-[72px] max-w-full w-full px-4 focus-visible:outline-none text-lg overflow-y-auto scrollbar-hide placeholder:text-bulle-700"
+        contenteditable
+        id="textarea"
+        aria-label="Send a message in ..."
+        aria-multiline="true"
+        aria-placeholder="Send a message in ..."
+        spellcheck="true"
+        autocorrect="off"
+        aria-invalid="false"
+        role="textbox"
+        tabindex="2"
+      />
+    </form>
+    <button
+      class="flex-shrink-0 chat-input-buttons select-none flex items-center justify-center h-[72px] w-[72px] hover:cursor-pointer transition-colors"
+      ><AddEmojiSvg /></button
+    >
+  </div>
 </div>
 
 <style>
